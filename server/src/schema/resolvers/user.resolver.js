@@ -27,7 +27,7 @@ const UserResolver = {
             const token = jwt.sign({
                 _id: isUserExist._id,
                 email: email,
-            }, SECRET_KEY);
+            }, process.env.JWT_SECRET);
 
             return {
                 token: token,
@@ -46,6 +46,7 @@ const UserResolver = {
             }
 
             const hashPassword = await bcrypt.hash(password, 10)
+            console.log("Secret: ",process.env.JWT_SECRET);
 
             const isUserExist = await User.findOne({ email })
             if (isUserExist) {
@@ -55,6 +56,7 @@ const UserResolver = {
             const newUser = await User.create({
                 email,
                 password: hashPassword,
+                username: name,
                 name
             })
 
@@ -63,7 +65,7 @@ const UserResolver = {
             const token = jwt.sign({
                 _id: newUser._id,
                 email: email,
-            }, SECRET_KEY);
+            }, process.env.JWT_SECRET);
 
             return {
                 token: token,

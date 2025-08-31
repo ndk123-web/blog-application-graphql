@@ -16,7 +16,7 @@
 
                 extend type Mutation{
                     login(email: String! , password: String! ): AuthPayload!
-                    signUp(email: String , password: String! , confirmPassword: String! ): AuthPayload!
+                    signUp(name: String! , email: String! , password: String! , confirmPassword: String! ): AuthPayload!
                     logOut(email: String!): Boolean!
                 }
                 

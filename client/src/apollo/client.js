@@ -1,0 +1,52 @@
+import {
+  ApolloClient,
+  InMemoryCache,
+  createHttpLink,
+} from '@apollo/client';
+import { GraphQLWsLink } from '@apollo/client/link/subscriptions';
+import { createClient } from 'graphql-ws';
+import { split } from '@apollo/client';
+import { getMainDefinition } from '@apollo/client/utilities';
+
+// HTTP Link for queries and mutations
+const httpLink = createHttpLink({
+  uri: 'http://localhost:4000/graphql',
+});
+
+// WebSocket Link for subscriptions
+const wsLink = new GraphQLWsLink(
+  createClient({
+    url: 'ws://localhost:4000/graphql',
+    connectionParams: {
+      authToken: localStorage.getItem('token')
+    }
+  })
+);
+
+
+// Split link to route operations
+// if query / mutation use httpLink
+// if subscription use wsLink
+const splitLink = split(
+  ({ query }) => {
+    const definition = getMainDefinition(query);
+
+    // if subsctiption then use wsLink else httpLink
+    // what definition.kind === "OperationDefinition"
+    // Ans -> query , mutation , subscription are under "OperationDefinition"
+    return (
+      definition.kind === 'OperationDefinition' &&
+      definition.operation === 'subscription'
+    );
+  },
+  wsLink,
+  httpLink
+);
+
+// Apollo Client setup
+const client = new ApolloClient({
+  link: splitLink,
+  cache: new InMemoryCache(),
+});
+
+export default client;

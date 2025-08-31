@@ -17,6 +17,8 @@ import dotenv from 'dotenv';
 dotenv.config(); // load .env variables
 
 const pubsub = new PubSub();
+console.log("JWT_SECRET: ",process.env.JWT_SECRET)
+console.log("MONGOURI: ",process.env.MONGODB_URI)
 
 const schema = makeExecutableSchema({ typeDefs, resolvers });
 
