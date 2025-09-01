@@ -22,6 +22,12 @@ const Post = `#graphql
         deletePost(postId: ID!): Boolean!
     }
 
+    extend type Subscription{
+        createPost: Post!
+        updatePost: Post!
+        deletePost: Boolean!
+    }
+
 `
 
 export default Post;

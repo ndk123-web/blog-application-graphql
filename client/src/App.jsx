@@ -6,6 +6,7 @@ import SignUp from "./pages/SignUp";
 import SignIn from "./pages/Login";
 import Post from "./pages/Posts";
 import Navbar from "./pages/Navbar";
+import UpdatePost from "./pages/UpdatePost";
 
 function App() {
   return (
@@ -47,6 +48,14 @@ function App() {
               </>
             }
           />
+          <Route
+          path="/post/update/:postId"
+          element={
+            <>
+              <Navbar /> <UpdatePost />{" "}
+            </>
+          }
+           />
         </Routes>
       </BrowserRouter>
     </>

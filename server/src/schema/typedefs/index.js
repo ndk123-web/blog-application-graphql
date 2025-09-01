@@ -5,6 +5,7 @@ import Comment from "./comment.typedef.js";
 const rootTypeDef = `#graphql
     type Query
     type Mutation
+    type Subscription
 `
 
 const typeDefs = [rootTypeDef, User, Post, Comment];

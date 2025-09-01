@@ -1,4 +1,8 @@
+import { subscribe } from "diagnostics_channel";
 import Post from "../../models/post.model.js";
+import { PubSub } from "graphql-subscriptions";
+
+const pubsub = new PubSub();
 
 const PostResolver = {
   Query: {
@@ -11,8 +15,7 @@ const PostResolver = {
   },
 
   Mutation: {
-    createPost: async (_, { title, subtitle, text }, context) => {
-      const user = context?.user;
+    createPost: async (_, { title, subtitle, text }, { user }) => {
       if (!user) throw new Error("User Not Authorized");
 
       const newPost = await Post.create({
@@ -22,11 +25,13 @@ const PostResolver = {
         author: user._id
       });
 
+      // "createPost" key must be that what we define in typedef
+      pubsub.publish('POST_CREATED', { createPost: newPost }); // ✅ Correct key
+
       return newPost;
     },
 
-    editPost: async (_, { title, subtitle, text, postId }, context) => {
-      const user = context?.user;
+    editPost: async (_, { title, subtitle, text, postId }, { user }) => {
       if (!user) throw new Error("User Not Authorized");
 
       const post = await Post.findById(postId);
@@ -40,11 +45,15 @@ const PostResolver = {
       post.subtitle = subtitle;
       post.text = text;
 
-      return await post.save();
+      const updatedPost = await post.save();
+
+      // "updaatePost" key must be that what we define in typedef
+      pubsub.publish('POST_UPDATED', { updatePost: updatedPost }); // ✅ Correct key
+
+      return updatedPost;
     },
 
-    deletePost: async (_, { postId }, context) => {
-      const user = context?.user;
+    deletePost: async (_, { postId }, { user }) => {
       if (!user) throw new Error("User Not Authorized");
 
       const post = await Post.findById(postId);
@@ -55,9 +64,44 @@ const PostResolver = {
       }
 
       await post.remove();
+
+      // "deletePost" key must be that what we define in typedef
+      pubsub.publish('POST_DELETED', { deletePost: true }); // ✅ Correct key
+
       return true;
     }
+  },
+
+  Subscription: {
+    createPost: {
+      subscribe: (_, __, { user }) => {
+        if (!user) {
+          throw new Error("User Not Authorized");
+        }
+        console.log("User WS:", user);
+        return pubsub.asyncIterator(['POST_CREATED']);
+      }
+    },
+
+    updatePost: {
+      subscribe: (_, __, { user }) => {
+        if (!user) {
+          throw new Error("User Not Authorized");
+        }
+        return pubsub.asyncIterator(['POST_UPDATED']);
+      }
+    },
+
+    deletePost: {
+      subscribe: (_, __, { user }) => {
+        if (!user) {
+          throw new Error("User Not Authorized");
+        }
+        return pubsub.asyncIterator(['POST_DELETED']);
+      }
+    }
   }
+
 };
 
 export default PostResolver;

@@ -17,8 +17,8 @@ import dotenv from 'dotenv';
 dotenv.config(); // load .env variables
 
 const pubsub = new PubSub();
-console.log("JWT_SECRET: ",process.env.JWT_SECRET)
-console.log("MONGOURI: ",process.env.MONGODB_URI)
+console.log("JWT_SECRET: ", process.env.JWT_SECRET)
+console.log("MONGOURI: ", process.env.MONGODB_URI)
 
 const schema = makeExecutableSchema({ typeDefs, resolvers });
 
@@ -38,8 +38,9 @@ const serverCleanup = useServer({
         // FOR WEB SOCKET JWT AUTH
 
         // ctx.connectionParams contains data sent by client when connecting
-        const token = ctx.connectionParams?.token; // or 'Authorization' based on your client
+        const token = ctx.connectionParams?.token.replace("Bearer ", ""); // or 'Authorization' based on your client
 
+        console.log("WS token:", token);
         if (!token) {
             throw new Error("Unauthorized: No token provided");
         }
@@ -47,7 +48,7 @@ const serverCleanup = useServer({
         let user;
         try {
             // Verify JWT (replace with your actual secret)
-            user = jwt.verify(token, "SECRET_KEY");
+            user = jwt.verify(token, process.env.JWT_SECRET);
         } catch (err) {
             throw new Error("Invalid or expired token");
         }
@@ -84,8 +85,10 @@ async function startServer() {
     app.use(
         '/graphql',
         cors({
-            origin: ['http://localhost:4000', 'http://localhost:5173', 'https://studio.apollographql.com'],
+            origin: ['http://localhost:4000', 'http://localhost:5173', 'https://studio.apollographql.com', 'http://192.168.0.104:5173'],
             credentials: true,
+            methods: ['GET', 'POST', 'OPTIONS'], // ✅ OPTIONS request allow
+            allowedHeaders: ['Content-Type', 'Authorization'], // ✅ required for JWT
         }),
         express.json(),
 
@@ -95,17 +98,17 @@ async function startServer() {
                 const authHeader = req.headers?.authorization;
 
                 if (!authHeader) {
-                    console.log("Header: ",authHeader)
+                    console.log("Header: ", authHeader)
                     return {}; // No auth provided, but allow the request
                 }
 
                 try {
-                    console.log("Header: ",authHeader)
+                    console.log("Header: ", authHeader)
                     const token = authHeader.replace("Bearer ", "");
                     const user = jwt.verify(token, process.env.JWT_SECRET);
                     return { user };
                 } catch (err) {
-                    console.log("Error: ",err)
+                    console.log("Error: ", err)
                     return {}; // Invalid token, but allow request without user context
                 }
             }

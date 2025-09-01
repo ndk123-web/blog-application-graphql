@@ -33,6 +33,7 @@ const CreatePost = () => {
       setLoading(true);
       await createPost({
         variables: { title: title, subtitle: subtitle, text: content },
+        // refetchQueries: { query: GET_ALL_POSTS },
       });
       alert("Post Created Successfully");
     } catch (err) {
