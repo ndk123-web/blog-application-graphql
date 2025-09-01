@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useMutation, gql } from "@apollo/client";
+import { useNavigate } from "react-router-dom";
 
 const CREATE_POST = gql`
   mutation createUser($title: String!, $subtitle: String!, $text: String!) {
@@ -17,6 +18,7 @@ const CreatePost = () => {
   const [subtitle, setSubtitle] = useState("");
   const [content, setContent] = useState("");
   const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
 
   // important
   const [createPost] = useMutation(CREATE_POST);
@@ -79,6 +81,13 @@ const CreatePost = () => {
 
         <button type="submit">Create Post</button>
       </form>
+
+      <br />
+      <br />
+
+      <button onClick={() => navigate('/home') }>
+        Home 
+      </button>
     </>
   );
 };

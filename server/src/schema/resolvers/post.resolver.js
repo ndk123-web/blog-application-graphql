@@ -4,6 +4,9 @@ const PostResolver = {
   Query: {
     getAllPosts: async () => {
       return await Post.find({}).sort({ createdAt: -1 });
+    },
+    getPostById: async (_, { postId }) => {
+      return await Post.findById(postId);
     }
   },
 

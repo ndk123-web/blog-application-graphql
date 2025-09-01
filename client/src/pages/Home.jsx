@@ -6,6 +6,10 @@ import {
   useSubscription,
 } from "@apollo/client";
 import { useNavigate } from "react-router-dom";
+import dayjs from "dayjs";
+import relativeTime from "dayjs/plugin/relativeTime";
+
+dayjs.extend(relativeTime);
 
 const Home = () => {
   const navigate = useNavigate();
@@ -49,11 +53,13 @@ const Home = () => {
         ) : (
           <>
             {data.getAllPosts?.map((val, idx) => (
-              <div key={val._id}>
-                <h3>{val.title}</h3>
-                <p>{val.subtitle}</p>
-                <p>{val.createdAt}</p>
-              </div>
+              <button key={idx} onClick={() => navigate(`/post/${val._id}`)}>
+                <div className="border-2 border-black p-2 m-2">
+                  <h3>{val.title}</h3>
+                  <p>{val.subtitle}</p>
+                  <p>created: {dayjs(Number(val.createdAt)).fromNow()}</p>
+                </div>
+              </button>
             ))}
           </>
         )}
@@ -61,7 +67,7 @@ const Home = () => {
 
       <hr />
 
-      <button onClick={refetch}>Refetch GET_ALL_POSTS</button>
+      <button onClick={() => refetch()}>Refetch GET_ALL_POSTS</button>
 
       <br />
       <br />

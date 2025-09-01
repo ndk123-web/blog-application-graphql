@@ -13,6 +13,7 @@ const Post = `#graphql
 
     type Query{
         getAllPosts: [Post!]!
+        getPostById(postId: ID!): Post! 
     }
 
     extend type Mutation{
