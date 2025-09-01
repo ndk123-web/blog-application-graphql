@@ -12,6 +12,12 @@ import { Link } from "react-router-dom";
 
 dayjs.extend(relativeTime);
 
+const DELETE_POST = gql`
+  mutation DeletePost($postId: ID!) {
+    deletePost(postId: $postId)
+  }
+`;
+
 export const GET_ALL_POSTS = gql`
   query getAllPosts {
     getAllPosts {
@@ -48,11 +54,15 @@ const Home = () => {
 
   const POST_DELETED_SUBSCRIPTION = gql`
     subscription PostDeleted {
-      deletePost
+      deletePost {
+        _id
+        title
+      }
     }
   `;
 
   const { loading, data, error, refetch } = useQuery(GET_ALL_POSTS);
+  const [deletePost] = useMutation(DELETE_POST);
 
   useSubscription(POST_CREATED_SUBSCRIPTION, {
     onData: ({ data }) => {
@@ -83,6 +93,20 @@ const Home = () => {
       </>
     );
   }
+
+  const handleDelete = async (postId) => {
+    try {
+      if (!confirm("Do U Want To Delete ? ")) return;
+      await deletePost({ variables: { postId } });
+    } catch (err) {
+      alert(err.message);
+    } finally {
+
+       // after delete refetch All Posts
+       // or web socker also listening on when Post Deleted
+      refetch();
+    }
+  };
 
   return (
     <>
@@ -125,7 +149,7 @@ const Home = () => {
                     type="button"
                     onClick={(e) => {
                       e.stopPropagation(); // ✅ Stop card click
-                      navigate(`/post/delete/${val._id}`);
+                      handleDelete(val._id);
                     }}
                     className="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600"
                   >

@@ -63,13 +63,14 @@ const PostResolver = {
         throw new Error("Not Authorized to delete this post");
       }
 
-      await post.remove();
+      await post.deleteOne();
 
-      // "deletePost" key must be that what we define in typedef
-      pubsub.publish('POST_DELETED', { deletePost: true }); // ✅ Correct key
+      // Notify subscribers with postId
+      pubsub.publish('POST_DELETED', { deletePost: postId });
 
-      return true;
+      return true; // or return postId if your type is ID
     }
+
   },
 
   Subscription: {
