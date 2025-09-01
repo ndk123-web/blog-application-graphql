@@ -54,10 +54,7 @@ const Home = () => {
 
   const POST_DELETED_SUBSCRIPTION = gql`
     subscription PostDeleted {
-      deletePost {
-        _id
-        title
-      }
+      deletePost
     }
   `;
 
@@ -84,6 +81,16 @@ const Home = () => {
     },
   });
 
+  useSubscription(POST_DELETED_SUBSCRIPTION, {
+    onData: ({ data }) => {
+      console.log("New Post Deleted: ", data.data.deletePost);
+
+      // This is Important whenever this runs then automatically this component render
+      // refetch is of GET_ALL_POSTS so all components using this Query will re renders
+      refetch();
+    },
+  });
+
   if (loading) {
     return (
       <>
@@ -101,9 +108,8 @@ const Home = () => {
     } catch (err) {
       alert(err.message);
     } finally {
-
-       // after delete refetch All Posts
-       // or web socker also listening on when Post Deleted
+      // after delete refetch All Posts
+      // or web socker also listening on when Post Deleted
       refetch();
     }
   };

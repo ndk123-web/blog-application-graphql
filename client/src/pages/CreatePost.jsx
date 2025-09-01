@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useMutation, gql } from "@apollo/client";
 import { useNavigate } from "react-router-dom";
+import { GET_ALL_POSTS } from '../pages/Home'
 
 const CREATE_POST = gql`
   mutation createUser($title: String!, $subtitle: String!, $text: String!) {
@@ -33,7 +34,7 @@ const CreatePost = () => {
       setLoading(true);
       await createPost({
         variables: { title: title, subtitle: subtitle, text: content },
-        // refetchQueries: { query: GET_ALL_POSTS },
+        refetchQueries: { query: GET_ALL_POSTS },
       });
       alert("Post Created Successfully");
     } catch (err) {
