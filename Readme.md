@@ -126,8 +126,14 @@ blog-graphql/
    cd server
    npm install
    ```
+3. **Setup Local Mongodatsbase**
+   - require mongodatabase in machine 
+   - This will run the Mongodb server 
+   ```bash
+   mongod 
+   ```
 
-3. **Setup Frontend Client**
+4. **Setup Frontend Client**
    ```bash
    cd ../client
    npm install
