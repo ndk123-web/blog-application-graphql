@@ -3,7 +3,6 @@
                 type User{
                     _id: ID!
                     name: String!
-                    username: String!
                     email: String!
                     createdAt: String!
                     updatedAt: String!

@@ -6,6 +6,7 @@ import {
 import { GraphQLWsLink } from '@apollo/client/link/subscriptions';
 import { createClient } from 'graphql-ws';
 import { split } from '@apollo/client';
+import { setContext } from '@apollo/client/link/context';
 import { getMainDefinition } from '@apollo/client/utilities';
 
 // HTTP Link for queries and mutations
@@ -18,10 +19,21 @@ const wsLink = new GraphQLWsLink(
   createClient({
     url: 'ws://localhost:4000/graphql',
     connectionParams: {
-      authToken: localStorage.getItem('token')
+      token: localStorage.getItem('token') ? `Bearer ${localStorage.getItem('token')}` : ""
     }
   })
 );
+
+// Automatically sends headers
+const authLink = setContext((_, { headers }) => {
+  const token = localStorage.getItem("token");
+  return {
+    headers: {
+      ...headers,
+      authorization: token ? `Bearer ${token}` : ""
+    }
+  }
+})
 
 
 // Split link to route operations
@@ -45,7 +57,7 @@ const splitLink = split(
 
 // Apollo Client setup
 const client = new ApolloClient({
-  link: splitLink,
+  link: authLink.concat(splitLink),
   cache: new InMemoryCache(),
 });
 

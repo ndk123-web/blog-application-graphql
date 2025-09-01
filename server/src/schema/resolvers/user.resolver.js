@@ -2,7 +2,6 @@ import User from "../../models/user.model.js";
 import jwt from "jsonwebtoken";
 import bcrypt from "bcrypt";
 
-const SECRET_KEY = process.env.JWT_SECRET; // store in env file
 
 const UserResolver = {
 
@@ -46,7 +45,6 @@ const UserResolver = {
             }
 
             const hashPassword = await bcrypt.hash(password, 10)
-            console.log("Secret: ",process.env.JWT_SECRET);
 
             const isUserExist = await User.findOne({ email })
             if (isUserExist) {

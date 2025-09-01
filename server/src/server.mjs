@@ -92,17 +92,20 @@ async function startServer() {
         // jwt auth 
         expressMiddleware(server, {
             context: async ({ req }) => {
-                const authHeader = req.headers.authorization;
+                const authHeader = req.headers?.authorization;
 
                 if (!authHeader) {
+                    console.log("Header: ",authHeader)
                     return {}; // No auth provided, but allow the request
                 }
 
                 try {
+                    console.log("Header: ",authHeader)
                     const token = authHeader.replace("Bearer ", "");
-                    const user = jwt.verify(token, "SECRET_KEY");
+                    const user = jwt.verify(token, process.env.JWT_SECRET);
                     return { user };
                 } catch (err) {
+                    console.log("Error: ",err)
                     return {}; // Invalid token, but allow request without user context
                 }
             }
