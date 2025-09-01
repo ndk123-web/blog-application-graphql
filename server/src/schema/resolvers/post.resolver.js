@@ -16,7 +16,14 @@ const PostResolver = {
       return instance;
     },
     getPostById: async (_, { postId }) => {
-      return await Post.findById(postId);
+      const postInstance =  await Post.findById(postId);
+      if (!postInstance) throw new Error("Post Not Found");
+
+      // Populate author field with user data
+      await User.populate(postInstance, { path: "author", select: "email name" });
+      console.log("Post Found: ", postInstance);
+
+      return postInstance;
     }
   },
 

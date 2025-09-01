@@ -7,10 +7,11 @@ import SignIn from "./pages/Login";
 import Post from "./pages/Posts";
 import Navbar from "./pages/Navbar";
 import UpdatePost from "./pages/UpdatePost";
+import { ThemeProvider } from "./context/ThemeContext";
 
 function App() {
   return (
-    <>
+    <ThemeProvider>
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<SignIn />} />
@@ -58,7 +59,7 @@ function App() {
            />
         </Routes>
       </BrowserRouter>
-    </>
+    </ThemeProvider>
   );
 }
 
