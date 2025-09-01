@@ -27,6 +27,9 @@ export const GET_ALL_POSTS = gql`
       createdAt
       text
       updatedAt
+      author{
+        email
+      }
     }
   }
 `;
@@ -140,28 +143,30 @@ const Home = () => {
                   created: {dayjs(Number(val.updatedAt)).fromNow()}
                 </p>
 
-                <div className="mt-4 flex gap-2">
-                  <button
-                    type="button"
-                    onClick={(e) => {
-                      e.stopPropagation(); // ✅ Stop card click
-                      navigate(`/post/update/${val._id}`);
-                    }}
-                    className="bg-blue-500 text-white px-3 py-1 rounded hover:bg-blue-600"
-                  >
-                    Update
-                  </button>
-                  <button
-                    type="button"
-                    onClick={(e) => {
-                      e.stopPropagation(); // ✅ Stop card click
-                      handleDelete(val._id);
-                    }}
-                    className="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600"
-                  >
-                    Delete
-                  </button>
-                </div>
+                {JSON.parse(localStorage.getItem("userData"))?.email === val.author?.email && (
+                  <div className="mt-4 flex gap-2">
+                    <button
+                      type="button"
+                      onClick={(e) => {
+                        e.stopPropagation(); // ✅ Stop card click
+                        navigate(`/post/update/${val._id}`);
+                      }}
+                      className="bg-blue-500 text-white px-3 py-1 rounded hover:bg-blue-600"
+                    >
+                      Update
+                    </button>
+                    <button
+                      type="button"
+                      onClick={(e) => {
+                        e.stopPropagation(); // ✅ Stop card click
+                        handleDelete(val._id);
+                      }}
+                      className="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600"
+                    >
+                      Delete
+                    </button>
+                  </div>
+                )}
               </div>
             ))}
           </div>
@@ -174,7 +179,7 @@ const Home = () => {
         onClick={() => refetch()}
         className="bg-gray-300 px-4 py-2 rounded hover:bg-gray-400"
       >
-        Refetch GET_ALL_POSTS
+        Refetch Posts
       </button>
 
       <br />

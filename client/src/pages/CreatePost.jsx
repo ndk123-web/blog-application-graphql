@@ -10,7 +10,7 @@ const CREATE_POST = gql`
       subtitle
       createdAt
       text
-    }
+    } 
   }
 `;
 

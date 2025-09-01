@@ -1,13 +1,19 @@
 import { subscribe } from "diagnostics_channel";
 import Post from "../../models/post.model.js";
 import { PubSub } from "graphql-subscriptions";
+import User from "../../models/user.model.js";
 
 const pubsub = new PubSub();
 
 const PostResolver = {
   Query: {
     getAllPosts: async () => {
-      return await Post.find({}).sort({ createdAt: -1 });
+      const postInstance =  await Post.find({}).sort({ createdAt: -1 });
+      // Populate author field with user data
+      const instance = await User.populate(postInstance, { path: "author", select: "email" });
+      console.log("All Posts: ", instance);
+      
+      return instance;
     },
     getPostById: async (_, { postId }) => {
       return await Post.findById(postId);
