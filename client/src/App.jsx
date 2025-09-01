@@ -4,6 +4,7 @@ import Post from './pages/Posts';
 import About from './pages/About';
 import CreatePost from './pages/CreatePost';
 import SignUp from './pages/SignUp';
+import SignIn from './pages/Login';
 
 function App() {
 
@@ -11,7 +12,8 @@ function App() {
     <>
       <BrowserRouter>
         <Routes>
-          <Route path="/" element={<SignUp />} />
+          <Route path="/" element={<SignIn />} />
+          <Route path="/signup" element={<SignUp />} />
           <Route path="/post" element={<Post />} />
           <Route path="/about" element={<About />} />
           <Route path="/create-post" element={<CreatePost />} />
